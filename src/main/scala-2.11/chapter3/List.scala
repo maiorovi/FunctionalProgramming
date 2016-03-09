@@ -1,5 +1,7 @@
 package chapter3
 
+import scala.annotation.tailrec
+
 sealed trait List[+A]
 object Nil extends List[Nothing]
 case class Cons[+A](head:A, tail:List[A]) extends List[A]
@@ -59,6 +61,42 @@ object List {
     case Cons(x,xs) => if (f(x)) dropWhile(xs)(f) else xs
   }
 
+  def foldRight[A, B](xs:List[A], z:B)(f: (A,B) => B):B = xs match {
+    case Nil => z
+    case Cons(x,xs) => f(x, foldRight(xs, z)(f))
+  }
+
+  @tailrec
+  def foldLeft[A,B](xs:List[A], z:B)(f: (B,A) => B):B = xs match {
+    case Nil => z
+    case Cons(x,xs) => foldLeft(xs,f(z,x))(f)
+  }
+
+  def _sum(x:Int, y:Int):Int = x + y
+
+  def _product(x:Int, y:Int):Int = x * y
+
+  def __sum(xs:List[Int]):Int = foldLeft(xs,0)(_ + _)
+
+  def __product(xs:List[Int]):Int = foldLeft(xs, 0)(_ * _)
+
+  def __length[A](xs:List[A]):Int = foldLeft(xs, 0)( (x,y) => x + 1)
+
+  def length[A](xs:List[A]):Int = foldRight(xs, 0)( (x,y) => y + 1)
+
+  def reverse[A](xs:List[A]):List[A] = {
+    @tailrec
+    def loop(xs: List[A], acc: List[A]): List[A] = xs match {
+      case Nil => acc
+      case Cons(x, xs) => loop(xs, Cons(x, acc))
+    }
+
+    loop(xs, Nil)
+  }
+
+  def _append[A](xs:List[A], ys:List[A]):List[A] = foldLeft(reverse(xs),ys)((acc,head) => Cons(head,acc))
+
+  def _reverse[A](xs:List[A]) = foldLeft(xs, List[A]())( (acc,h) => Cons(h,acc))
 
   def apply[A](xs:A*):List[A] = if (xs.isEmpty) Nil else Cons(xs.head, apply(xs.tail:_*))
 }
