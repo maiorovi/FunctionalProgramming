@@ -94,6 +94,49 @@ object List {
     loop(xs, Nil)
   }
 
+  def map[A,B](xs:List[A])(f: A => B):List[B] = {
+    def loop(acc:List[B], initial:List[A]):List[B] = initial match {
+      case Nil => acc
+      case Cons(x,xs) => loop(Cons(f(x),acc), xs)
+    }
+
+    loop(Nil, reverse(xs))
+  }
+
+  def filter[A](xs:List[A])(f: A => Boolean):List[A] = {
+    def loop(acc:List[A], initial:List[A]):List[A] = initial match {
+      case Nil => acc
+      case Cons(x,xs) => if (f(x)) loop(acc, xs) else loop(Cons(x,acc), xs)
+    }
+
+    loop(Nil, reverse(xs))
+  }
+
+  def _filter[A](xs:List[A])(f: A => Boolean):List[A] = flatMap(xs)(x => if (f(x)) List(x) else List())
+
+  def flatMap[A,B](xs:List[A])(f: A => List[B]):List[B] = xs match {
+    case Nil => Nil
+    case Cons(x,xs) => _append(f(x),flatMap(xs)(f))
+  }
+
+  def addContents(xs:List[Int], ys:List[Int]):List[Int] = (xs,ys) match {
+    case (Nil, _) => Nil
+    case (_, Nil) => Nil
+    case (Cons(x,xs), Cons(y,ys)) => Cons((x+y), addContents(xs,ys))
+  }
+
+  def zipWith[A](xs:List[A], ys:List[A])(f: (A,A) => A):List[A] = (xs, ys) match {
+    case (Nil, _) => Nil
+    case (_, Nil) => Nil
+    case (Cons(x,xs), Cons(y,ys)) => Cons((f(x,y)), zipWith(xs,ys)(f))
+  }
+
+  def convertToString(xs:List[Double]):List[String] = map(xs)(x => x.toString)
+
+  def filterOdd(xs:List[Int]):List[Int] = filter(xs)( x => x % 2 != 0)
+
+  def incAllByOne(xs:List[Int]):List[Int] = map[Int, Int](xs)(x => x + 1)
+
   def _append[A](xs:List[A], ys:List[A]):List[A] = foldLeft(reverse(xs),ys)((acc,head) => Cons(head,acc))
 
   def _reverse[A](xs:List[A]) = foldLeft(xs, List[A]())( (acc,h) => Cons(h,acc))
