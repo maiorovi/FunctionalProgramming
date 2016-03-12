@@ -20,5 +20,19 @@ object Tree {
     loop(tree, Int.MinValue)
   }
 
+  def depth[A](tree:Tree[A]):Int = tree match {
+    case Leaf(value) => 0
+    case Node(left, right) => {
+      val ldepth = 1 + depth(left)
+      val rdepth = 1 + depth(right)
+      if (ldepth > rdepth) ldepth else rdepth
+    }
+  }
 
-}
+  def map[A,B](tree:Tree[A])(f: A => B):Tree[B] = tree match {
+    case Leaf(value) => Leaf(f(value))
+    case Node(left, right) => Node(map(left)(f), map(right)(f))
+  }
+
+
+ }

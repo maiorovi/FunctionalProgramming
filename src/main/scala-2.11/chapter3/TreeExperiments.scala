@@ -5,4 +5,9 @@ object TreeExperiments extends App {
 
   println(Tree.size(tree))
   println(Tree.max(tree))
+
+  println(Tree.depth(tree))
+
+
+  println(Tree.map(tree)(x => 2*x))
 }
