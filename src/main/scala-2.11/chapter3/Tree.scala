@@ -34,5 +34,14 @@ object Tree {
     case Node(left, right) => Node(map(left)(f), map(right)(f))
   }
 
+  // TODO: implement tree folding
+//  def fold[B](tree:Tree[B], z:B)(f: (B,B) => B):B = tree match {
+//    case Leaf(value) => f(z,value)
+//    case Node(left,right) => f(fold(left,z)(f),fold(right,z)(f))
+//  }
+
+
+//  def _size(tree:Tree[Int]):Int = fold(tree,0)((x,y) => y + 1)
+
 
  }

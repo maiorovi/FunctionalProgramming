@@ -10,4 +10,7 @@ object TreeExperiments extends App {
 
 
   println(Tree.map(tree)(x => 2*x))
+
+//  //test
+//  println(Tree._size(tree))
 }
