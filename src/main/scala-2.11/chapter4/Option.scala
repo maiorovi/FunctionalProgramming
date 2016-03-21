@@ -48,6 +48,11 @@ object Option {
 
   def lift[A,B](f: A => B): Option[A] => Option[B] = _ map f
 
+  def traverse[A, B](xs: List[A])(f: A => Option[B]): Option[List[B]] = xs match {
+    case Nil => Some(Nil)
+    case x::xs => map2(f(x), traverse(xs)(f))(_::_)
+  }
+
 }
 
 case class Some[+A](value:A) extends Option[A]
