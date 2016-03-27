@@ -46,8 +46,39 @@ sealed trait Stream[+A] {
     case Cons(h, _ ) if n == 1 => cons(h(), empty)
   }
 
-  def isEmpty:Boolean
+  def takeWhile(p: A => Boolean): Stream[A] = this match {
+    case Cons(h,t) if p(h()) => cons(h(), t().takeWhile(p))
+    case _ => empty
+  }
 
+  def exists(p:A => Boolean):Boolean = this match {
+    case Empty => false
+    case Cons(h,t) => (p(h())) || t().exists(p)
+  }
+
+  def foldRight[B](z: => B)(f: (A, => B) => B):B = this match {
+    case Empty => z
+    case Cons(h,t) => f(h(), t().foldRight(z)(f))
+  }
+
+  def forAll(p: A => Boolean):Boolean = this match {
+    case Cons(h,t) => p(h()) && t().forAll(p)
+    case _ => true
+  }
+
+  def forAll_fold(p: A => Boolean):Boolean = foldRight(true)( (x,y) => y && p(x))
+
+  def takeWhile_fold(p: A => Boolean):Stream[A] = foldRight(Empty[A])((x,y) => if(p(x)) cons(x, y) else y )
+
+  def map_fold[B](f: A => B):Stream[B] = foldRight(empty[B])((x,y) => cons(f(x), y))
+
+  def filter_fold(p: A => Boolean):Stream[A] = foldRight(empty[A])((h,t) => if(p(h)) cons(h,t) else t )
+
+  def append[B >: A](x: => Stream[B]):Stream[B] = foldRight(x)((h,t) => cons[B](h,t))
+
+  def flatMap_fold[B](f: A => Stream[B]): Stream[B] = foldRight(empty[B])((h,t) => f(h) append t)
+
+  def isEmpty:Boolean
 }
 
 case object Empty extends Stream[Nothing] {
